@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/codemirror.min.js"></script>
+    <link rel="shortcut icon" href="https://static.runoob.com/images/favicon.ico"
+        mce_href="//static.runoob.com/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.40.2/codemirror.min.css">
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/mode/css/css.min.js"></script>
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/addon/edit/closetag.min.js"></script>
+    <script src="https://cdn.staticfile.org/codemirror/5.40.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdn.staticfile.org/split.js/1.6.5/split.min.js"></script>
+    <script src="https://cdn.staticfile.org/downloadjs/1.4.8/download.min.js"></script>
+    <title>Document</title>
+    <style>
+        body {
+            background: #f6f6f6;
+        }
+
+        .split {
+            display: flex;
+            /*  两个框并排排 */
+            flex-direction: row;
+        }
+
+        #iframeResult {
+            display: block;
+            height: 100%;
+            width: 100%;
+        }
+
+        .gutter {
+            background-color: #fefefe;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+
+        .gutter.gutter-horizontal {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+            cursor: col-resize;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://unpkg.com/vue@next"></script>
+
+    <header class="py-3 mb-3 border-bottom" style="background: #96b97d; size: 50%;">
+        <div class="container-fluid d-grid gap-3 align-items-center" style="grid-template-columns: 2fr 1fr;"></div>
+    </header>
+
+    <div class="container-fluid pb-3">
+        <div class="split">
+            <div id="split-0" class="bg-body rounded shadow-sm ">
+                <div class="card">
+                    <div class="card-header">
+                        <button type="button" class="btn btn-success float-end" onclick="submitTryit()" id="submitBTN">
+                            点击运行 》
+                        </button>
+                    </div>
+
+
+
+                    <div class="card-body" style="padding:0">
+
+                        <div class="text-area">
+                            <textarea class="form-control" id="textareaCode" name="textareaCode"
+                                aria-placeholder="请输入记录评语..."></textarea>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div id="split-1" class="bg-body rounded shadow-sm">
+                <div class="card">
+                    <div class="card-header">
+                        <button type="button" class="btn btn-outline-secondary">运行结果：</button>
+
+                    </div>
+                    <div class="card-body">
+                        <div id="iframewrapper"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="py-3 my-4">
+            <ins class="adsbygoogle" style="display:inline-block;min-width:300px;max-width:970px;width:100%;height:90px"
+                data-ad-client="ca-pub-5751451760833794" data-ad-slot="6979016065"></ins>
+            <script>
+                function submitTryit() {
+                    var text = editor.getValue();
+                    var patternHtml = /<html[^>]*>((.|[\n\r])*)<\/html>/im
+                    var patternHead = /<head[^>]*>((.|[\n\r])*)<\/head>/im
+                    var array_matches_head = patternHead.exec(text);
+                    var patternBody = /<body[^>]*>((.|[\n\r])*)<\/body>/im;
+
+                    var array_matches_body = patternBody.exec(text);
+                    var basepath_flag = 1;
+                    var basepath = '';
+
+                    if (array_matches_head) {
+                        text = text.replace('<head>', '<head>' + basepath);
+                    } else if (patternHtml) {
+                        text = text.replace('<html>', '<head>' + basepath + '</head>');
+                    } else if (array_matches_body) {
+                        text = text.replace('<body>', '<body>' + basepath);
+                    } else {
+                        text = basepath + text;
+                    }
+                    var ifr = document.createElement("iframe");
+                    ifr.setAttribute("frameborder", "0");
+                    ifr.setAttribute("id", "iframeResult");
+
+                    document.getElementById("iframewrapper").innerHTML = "";
+                    document.getElementById("iframewrapper").appendChild(ifr);
+
+                    var ifrw = (ifr.contentWindow) ? ifr.contentWindow : (ifr.contentDocument.document) ? ifr.contentDocument.document : ifr.contentDocument;
+                    ifrw.document.open();
+                    ifrw.document.write(text);
+                    ifrw.document.close();
+                }
+                var mixedMode = {
+                    name: "htmlmixed",
+                    scriptTypes: [{
+                        matches: /\/x-handlebars-template|\/x-mustache/i,
+                        mode: null
+                    },
+                    {
+                        matches: /(text|application)\/(x-)?vb(a|script)/i,
+                        mode: "vbscript"
+                    }]
+                };
+                var editor = CodeMirror.fromTextArea(document.getElementById("textareaCode"), {
+                    mode: mixedMode,
+                    selectionPointer: true,
+                    /*   lineNumbers: true, */  /* 显示行号 */
+                    matchBrackets: true,
+                    indentUnit: 4,
+                    indentWithTabs: true
+                });
+                Split(['#split-0', '#split-1']);
+            </script>
+            <style>
+                .text-area {
+                    width: 100%;
+                    border-top: 1px solid gainsboro;
+                    border-bottom: 1px solid gainsboro;
+
+                }
+
+                .text-area textarea {
+                    width: 100%;
+                    margin: 0.75rem 0;
+                    border: none;
+                    outline: none;
+                    padding-left: 1.125rem;
+                    height: 6.5rem;
+                }
+
+                .text-area textarea::-webkit-input-placeholder {
+                    color: #9E9E9E;
+
+                }
+            </style>
+
+            <!-- 选择器 -->
+            <from style="position: absolute;left:100px ;top:3px;">
+                选择数据集：
+                <select>
+                    <option>鸢尾花数据集</option>
+                    <option>葡萄酒数据集</option>
+                    <option>数据集</option>
+                    <option></option>
+                    <option></option>
+                </select>
+            </from>
+
+            <from style="position: absolute;left:400px ;top:3px;">
+                选择算法：
+                <select>
+                    <option>逻辑回归</option>
+                    <option>BP</option>
+                    <option></option>
+                    <option></option>
+                    <option></option>
+                </select>
+            </from>
+
+
+                <!-- radio选项 -->
+         <!--    <br>
+            lable标签
+            <form>
+                单选 我们发现只有在点击小圆圈的时候 才能选中此项 那么lable标签就派上了用场，让其点击条目中的文字时也可以选中此项
+                除了单选元素有lable标签外，多选也有，所有表单元素都有lable标签
+                <input type="radio" name="sex" id="nan" checked> <label for="nan">男</label>
+                <input type="radio" name="sex" id="nv"> <label for="nv">女</label>
+            </form> -->
+
+
+
+</body>
+
+</html>
