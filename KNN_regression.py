@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib as mpl
 from scipy import io as spio
 import matplotlib.pyplot as plt
+from sklearn.datasets import load_boston
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
@@ -31,21 +33,31 @@ y_scaler = MinMaxScaler(feature_range=(-1, 1))
 
 # 数据的读取和归一化
 def dataTransform():
-    df = spio.loadmat('D:\VSProject\data\机器学习平台\house.mat')
-    df = df['housing']
-    x = df[:,0:12]
-    y = df[:,13]
-    y = y.reshape(-1, 1)  # 在sklearn中，所有的数据都应该是二维矩阵,所以需要使用.reshape(1,-1)进行转换
+    # df = spio.loadmat('D:\VSProject\data\机器学习平台\house.mat')
+    # df = df['housing']
+    # x = df[:,0:12]
+    # y = df[:,13]
+    # y = y.reshape(-1, 1)  # 在sklearn中，所有的数据都应该是二维矩阵,所以需要使用.reshape(1,-1)进行转换
+    # # 对数据进行最大最小值归一化
+    # x = x_scaler.fit_transform(x)
+    # y = y_scaler.fit_transform(y)
+    # # 训练集
+    # x_train = x[0:399, :]  # 二维
+    # y_train = y[0:399]
+    # # 测试集
+    # x_test = x[400:505, :]
+    # y_test = y[400:505]
+
+    # sklearn库里的数据
+    boston = load_boston()
+    X,y = boston.data,boston.target
+
+    X = x_scaler.fit_transform(X)
+    y = y_scaler.fit_transform(y.reshape(-1,1))
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
     # 对数据进行最大最小值归一化
-    x = x_scaler.fit_transform(x)
-    y = y_scaler.fit_transform(y)
-    # 训练集
-    x_train = x[0:399, :]  # 二维
-    y_train = y[0:399]
-    # 测试集
-    x_test = x[400:505, :]
-    y_test = y[400:505]
-    return x_train, y_train, x_test, y_test
+    return X_train, y_train, X_test, y_test
 
 
 # 测试算法
@@ -75,7 +87,7 @@ def draw(predict, y_test):
     plt.figure(figsize=(8, 6))
     plt.plot(predict, label='pred')
     plt.plot(y_test, label='actual')
-    plt.title('波士顿房价-测试集', )
+    plt.title('波士顿房价-测试集')
     plt.legend()
     plt.savefig('D:\VSProject\image\波士顿房价KNN.png')
     plt.show()
