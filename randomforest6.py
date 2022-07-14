@@ -22,8 +22,11 @@ sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 # classifier = RandomForestClassifier(n_estimators=10, criterion='entropy', random_state=0)
+# 训练模型
 RF.fit(X_train, y_train)
+# 得出预测值
 y_pred = RF.predict(X_test)
+
 print("随机森林准确率:", accuracy_score(y_test, y_pred))
 print("其他指标：\n", classification_report(y_test, y_pred, target_names=['0', '1', '2']))
 
