@@ -10,11 +10,17 @@ import itertools
 import warnings
 warnings.filterwarnings("ignore")
 
-# 导入数据
+# 导入iris数据
 df = pd.read_table("iris.txt", sep=",", header=None, encoding=None)
-
 X = df[[0, 1, 2, 3]]
 Y = df[[4]]
+
+# 导入波士顿数据集
+# df = pd.read_table("housing.csv", sep=",", header=None, encoding=None)
+# 数据归一化
+# df_norm = (df - df.min()) / (df.max() - df.min())
+# X = df_norm[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]
+# Y = df_norm[[13]]
 
 # 交叉验证法
 x_train, x_test, y_train, y_test = K_Flod_spilt(10, 1, X, Y)
@@ -51,11 +57,27 @@ col_numbers = range(0, 4)
 col_pairs1 = itertools.combinations(col_numbers, 2)
 col_pairs2 = itertools.combinations(col_numbers, 2)
 col_name = ['sepal length(cm)', 'sepal width(cm)', 'petal length(cm)', 'petal width(cm)']
-
+# cValue = train_y.copy()
+cValue1 = []
+for index in range(0, len(train_result)):
+    if train_result[index] == 'Iris-setosa':
+        cValue1.append('r')
+    elif train_result[index] == 'Iris-versicolor':
+        cValue1.append('b')
+    else:
+        cValue1.append('g')
+cValue2 = []
+for index in range(0, len(test_result)):
+    if test_result[index] == 'Iris-setosa':
+        cValue2.append('r')
+    elif test_result[index] == 'Iris-versicolor':
+        cValue2.append('b')
+    else:
+        cValue2.append('g')
 plt.figure(figsize=(12, 12))
 for i in col_pairs1:
     plt.subplot(subplot_start1)
-    plt.scatter(train_x[:, i[0]], train_x[:, i[1]])
+    plt.scatter(train_x[:, i[0]], train_x[:, i[1]], c=cValue1)
     plt.xlabel(col_name[i[0]])
     plt.ylabel(col_name[i[1]])
 
@@ -65,7 +87,7 @@ plt.savefig(r'logistic-训练集.png')
 plt.figure(figsize=(12, 12))
 for j in col_pairs2:
     plt.subplot(subplot_start2)
-    plt.scatter(test_x[:, j[0]], test_x[:, j[1]])
+    plt.scatter(test_x[:, j[0]], test_x[:, j[1]], c=cValue2)
     plt.xlabel(col_name[j[0]])
     plt.ylabel(col_name[j[1]])
 
@@ -78,10 +100,11 @@ confusion_matrix_result = metrics.confusion_matrix(test_predict, y_test)
 print('The confusion matrix result:\n', confusion_matrix_result)
 
 # 利用热力图对于混淆矩阵进行可视化
+# ticks = ['setosa', 'versicolor', 'virginica']
 ticks = np.unique(train_y)
 plt.figure(figsize=(8, 6))
 sns.heatmap(confusion_matrix_result, xticklabels=ticks, yticklabels=ticks, annot=True, cmap='YlGnBu')
 plt.xlabel('Predicted labels')
 plt.ylabel('True labels')
-# plt.show()
+plt.show()
 plt.savefig(r'logistic-混淆矩阵.png')
