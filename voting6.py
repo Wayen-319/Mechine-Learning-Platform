@@ -33,6 +33,7 @@ clf3 = LogisticRegression()
 
 # 集成模型
 sclf = VotingClassifier([('knn', clf1), ('dtree', clf2), ('lr', clf3)], voting='soft')
+# 训练模型
 sclf.fit(x_train, y_train)
 # 在训练集和测试集上分布利用训练好的模型进行预测
 train_predict = sclf.predict(x_train)
