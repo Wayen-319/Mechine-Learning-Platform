@@ -78,7 +78,7 @@ confusion_matrix_result = metrics.confusion_matrix(test_predict, y_test)
 print('The confusion matrix result:\n', confusion_matrix_result)
 
 # 利用热力图对于混淆矩阵进行可视化
-ticks = ['setosa', 'versicolor', 'virginica']
+ticks = np.unique(train_y)
 plt.figure(figsize=(8, 6))
 sns.heatmap(confusion_matrix_result, xticklabels=ticks, yticklabels=ticks, annot=True, cmap='YlGnBu')
 plt.xlabel('Predicted labels')
