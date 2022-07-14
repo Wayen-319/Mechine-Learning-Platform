@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 from k_cross import K_Flod_spilt
 import pandas as pd
+import numpy as np
 from sklearn.linear_model import LogisticRegression
+import itertools
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -17,6 +19,11 @@ Y = df[[4]]
 # 交叉验证法
 x_train, x_test, y_train, y_test = K_Flod_spilt(10, 1, X, Y)
 
+train_x = np.array(x_train)
+train_y = np.array(y_train)
+test_x = np.array(x_test)
+test_y = np.array(y_test)
+
 # 定义逻辑回归模型
 clf = LogisticRegression(random_state=0, solver='lbfgs')
 
@@ -26,6 +33,8 @@ clf.fit(x_train, y_train)
 # 在训练集和测试集上分布利用训练好的模型进行预测
 train_predict = clf.predict(x_train)
 test_predict = clf.predict(x_test)
+train_result = clf.predict(train_x)
+test_result = clf.predict(test_x)
 
 # 利用predict_proba函数预测其概率
 train_predict_proba = clf.predict_proba(x_train)
@@ -34,6 +43,35 @@ test_predict_proba = clf.predict_proba(x_test)
 # 利用精确率评估模型效果
 print('The accuracy of train set :', metrics.accuracy_score(y_train, train_predict))
 print('The accuracy of test set:', metrics.accuracy_score(y_test, test_predict))
+
+# 绘制散点图
+subplot_start1 = 321# 绘制一个3行2列的图
+subplot_start2 = 321# 绘制一个3行2列的图
+col_numbers = range(0, 4)
+col_pairs1 = itertools.combinations(col_numbers, 2)
+col_pairs2 = itertools.combinations(col_numbers, 2)
+col_name = ['sepal length(cm)', 'sepal width(cm)', 'petal length(cm)', 'petal width(cm)']
+
+plt.figure(figsize=(12, 12))
+for i in col_pairs1:
+    plt.subplot(subplot_start1)
+    plt.scatter(train_x[:, i[0]], train_x[:, i[1]])
+    plt.xlabel(col_name[i[0]])
+    plt.ylabel(col_name[i[1]])
+
+    subplot_start1 += 1
+plt.savefig(r'logistic-训练集.png')
+
+plt.figure(figsize=(12, 12))
+for j in col_pairs2:
+    plt.subplot(subplot_start2)
+    plt.scatter(test_x[:, j[0]], test_x[:, j[1]])
+    plt.xlabel(col_name[j[0]])
+    plt.ylabel(col_name[j[1]])
+
+    subplot_start2 += 1
+
+plt.savefig(r'logistic-测试集.png')
 
 # 混淆矩阵
 confusion_matrix_result = metrics.confusion_matrix(test_predict, y_test)
@@ -45,4 +83,5 @@ plt.figure(figsize=(8, 6))
 sns.heatmap(confusion_matrix_result, xticklabels=ticks, yticklabels=ticks, annot=True, cmap='YlGnBu')
 plt.xlabel('Predicted labels')
 plt.ylabel('True labels')
-plt.show()
+# plt.show()
+plt.savefig(r'logistic-混淆矩阵.png')
